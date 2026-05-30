@@ -123,12 +123,25 @@ export default function Home() {
   }, [currentPageId, narrationEnabled, speak, stop]);
 
   const isSeasonSelect = pageData.type === "season-select";
+  const isStoryPage    = pageData.type === "story";
+  const isActivityPage = pageData.type === "activity";
+  const isFullScreen   = isTitle || isSeasonSelect || isStoryPage || isActivityPage;
 
-  if (isTitle || isSeasonSelect) {
+  if (isFullScreen) {
+    const bgTheme = isTitle ? "title" : pageTheme;
     return (
       <main className="w-screen h-screen overflow-hidden relative">
-        <AnimatedBackground theme={isTitle ? "title" : "default"} />
-        <div className="absolute top-3 right-4 z-50 flex items-center gap-2">
+        <AnimatedBackground theme={bgTheme} />
+
+        {/* Progress bar — shown on story & activity pages */}
+        {(isStoryPage || isActivityPage) && (
+          <div className="absolute top-0 left-0 right-0 z-50">
+            <ProgressBar currentPageId={currentPageId} />
+          </div>
+        )}
+
+        {/* Control buttons */}
+        <div className="absolute top-2 right-3 z-[60] flex items-center gap-1.5">
           <motion.button
             whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
             onClick={() => { toggleNarration(); play("click"); }}
@@ -145,7 +158,18 @@ export default function Home() {
           >
             <span className="text-sm">{soundEnabled ? "🔊" : "🔇"}</span>
           </motion.button>
+          {!isTitle && (
+            <motion.button
+              whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
+              onClick={() => { if (confirm("Start over from the beginning?")) { resetStory(); play("click"); } }}
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-white/20 transition-all select-none"
+              title="Start Over"
+            >
+              <span className="text-sm">🏠</span>
+            </motion.button>
+          )}
         </div>
+
         {isTitle && (
           <TitlePage
             page={pageData as import("@/data/pages").TitlePageData}
@@ -156,6 +180,20 @@ export default function Home() {
           <SeasonSelectPage
             page={pageData as import("@/data/pages").SeasonSelectPageData}
             onBack={handleBack}
+          />
+        )}
+        {isStoryPage && (
+          <StoryPage
+            page={pageData as import("@/data/pages").StoryPageData}
+            onNext={() => navigate("next")}
+            onBack={() => navigate("back")}
+          />
+        )}
+        {isActivityPage && (
+          <ActivityPage
+            page={pageData as import("@/data/pages").ActivityPageData}
+            onNext={() => navigate("next")}
+            onBack={() => navigate("back")}
           />
         )}
       </main>

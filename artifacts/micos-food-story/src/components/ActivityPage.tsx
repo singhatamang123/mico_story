@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ActivityPageData, StoryItem } from "@/data/pages";
 import { useStoryStore } from "@/store/storyStore";
 import { useSound } from "@/hooks/useSound";
-import NavButtons from "./NavButtons";
-import Character from "./Character";
 
 interface ActivityPageProps {
   page: ActivityPageData;
@@ -12,67 +10,66 @@ interface ActivityPageProps {
   onBack: () => void;
 }
 
-// Layout placements for the Meadow scene
 const animalPlacements: Record<string, { top: string; left: string; rotate: number; scale: number }> = {
-  rabbit: { top: "65%", left: "20%", rotate: 0, scale: 1.15 },
-  butterfly: { top: "25%", left: "70%", rotate: -15, scale: 1 },
-  squirrel: { top: "50%", left: "15%", rotate: 5, scale: 1.1 },
-  bird: { top: "22%", left: "35%", rotate: -10, scale: 1 },
-  badger: { top: "62%", left: "75%", rotate: 0, scale: 1.2 },
-  hedgehog: { top: "72%", left: "48%", rotate: 8, scale: 1.05 },
+  rabbit:    { top: "62%", left: "18%", rotate: 0,   scale: 1.15 },
+  butterfly: { top: "22%", left: "68%", rotate: -15, scale: 1.0  },
+  squirrel:  { top: "48%", left: "12%", rotate: 5,   scale: 1.1  },
+  bird:      { top: "20%", left: "33%", rotate: -10, scale: 1.0  },
+  badger:    { top: "60%", left: "72%", rotate: 0,   scale: 1.2  },
+  hedgehog:  { top: "70%", left: "46%", rotate: 8,   scale: 1.05 },
 };
-
-// Layout placements for the Beach scene
 const beachPlacements: Record<string, { top: string; left: string; rotate: number; scale: number }> = {
-  shell:     { top: "60%", left: "18%", rotate: -12, scale: 1.1 },
-  crab:      { top: "65%", left: "72%", rotate:   8, scale: 1.15 },
-  starfish:  { top: "22%", left: "62%", rotate:  15, scale: 1.0 },
-  fish:      { top: "30%", left: "20%", rotate: -10, scale: 1.0 },
-  jellyfish: { top: "20%", left: "42%", rotate:   5, scale: 0.95 },
-  seahorse:  { top: "55%", left: "45%", rotate:  -8, scale: 1.05 },
+  shell:     { top: "58%", left: "16%", rotate: -12, scale: 1.1  },
+  crab:      { top: "63%", left: "70%", rotate:   8, scale: 1.15 },
+  starfish:  { top: "20%", left: "60%", rotate:  15, scale: 1.0  },
+  fish:      { top: "28%", left: "18%", rotate: -10, scale: 1.0  },
+  jellyfish: { top: "18%", left: "40%", rotate:   5, scale: 0.95 },
+  seahorse:  { top: "53%", left: "43%", rotate:  -8, scale: 1.05 },
 };
-
-// Layout placements for the Forest scene
 const forestPlacements: Record<string, { top: string; left: string; rotate: number; scale: number }> = {
-  mushroom: { top: "68%", left: "25%", rotate: -5, scale: 1.1 },
-  acorn:    { top: "60%", left: "65%", rotate: 12, scale: 1.0 },
-  firefly:  { top: "25%", left: "75%", rotate: -15, scale: 1.15 },
-  crystal:  { top: "45%", left: "15%", rotate: 5, scale: 1.1 },
-  leaf:     { top: "22%", left: "30%", rotate: 20, scale: 1.05 },
-  pinecone: { top: "50%", left: "80%", rotate: -8, scale: 1.0 },
+  mushroom: { top: "66%", left: "23%", rotate: -5,  scale: 1.1  },
+  acorn:    { top: "58%", left: "63%", rotate: 12,  scale: 1.0  },
+  firefly:  { top: "23%", left: "73%", rotate: -15, scale: 1.15 },
+  crystal:  { top: "43%", left: "13%", rotate: 5,   scale: 1.1  },
+  leaf:     { top: "20%", left: "28%", rotate: 20,  scale: 1.05 },
+  pinecone: { top: "48%", left: "78%", rotate: -8,  scale: 1.0  },
 };
-
-// Layout placements for the Snowman scene
 const snowmanPlacements: Record<string, { top: string; left: string; rotate: number; scale: number }> = {
-  snowman_hat:    { top: "10%", left: "50%", rotate: -5, scale: 1.2 }, // on top of head
-  snowman_scarf:  { top: "35%", left: "50%", rotate: 0, scale: 1.2 }, // neck area
-  snowman_carrot: { top: "25%", left: "50%", rotate: 5, scale: 1.1 }, // face
-  snowman_arms:   { top: "50%", left: "50%", rotate: 0, scale: 1.4 }, // across middle body
+  snowman_hat:    { top: "8%",  left: "50%", rotate: -5, scale: 1.2 },
+  snowman_scarf:  { top: "33%", left: "50%", rotate: 0,  scale: 1.2 },
+  snowman_carrot: { top: "23%", left: "50%", rotate: 5,  scale: 1.1 },
+  snowman_arms:   { top: "48%", left: "50%", rotate: 0,  scale: 1.4 },
 };
-
-// Layout placements for the Puddle scene
 const puddlePlacements: Record<string, { top: string; left: string; rotate: number; scale: number }> = {
-  frog:      { top: "68%", left: "18%", rotate: 0, scale: 1.2 },
-  raindrop:  { top: "25%", left: "70%", rotate: 10, scale: 0.95 },
-  leaf_boat: { top: "68%", left: "45%", rotate: -8, scale: 1.15 },
-  umbrella:  { top: "22%", left: "28%", rotate: -15, scale: 1.1 },
-  snail:     { top: "72%", left: "75%", rotate: 5, scale: 1.05 },
-  rainbow:   { top: "20%", left: "50%", rotate: 0, scale: 1.25 },
+  frog:      { top: "66%", left: "16%", rotate: 0,   scale: 1.2  },
+  raindrop:  { top: "23%", left: "68%", rotate: 10,  scale: 0.95 },
+  leaf_boat: { top: "66%", left: "43%", rotate: -8,  scale: 1.15 },
+  umbrella:  { top: "20%", left: "26%", rotate: -15, scale: 1.1  },
+  snail:     { top: "70%", left: "73%", rotate: 5,   scale: 1.05 },
+  rainbow:   { top: "18%", left: "48%", rotate: 0,   scale: 1.25 },
 };
-
-// Layout placements for the Plate scene (up to 4 items)
 const foodPlacements = [
-  { top: "22%", left: "22%", rotate: -10 },
-  { top: "22%", left: "58%", rotate: 12 },
-  { top: "58%", left: "22%", rotate: 8 },
-  { top: "58%", left: "58%", rotate: -5 },
+  { top: "20%", left: "20%", rotate: -10 },
+  { top: "20%", left: "55%", rotate: 12  },
+  { top: "55%", left: "20%", rotate: 8   },
+  { top: "55%", left: "55%", rotate: -5  },
 ];
+
+const SCENE_STYLES: Record<string, { bg: string; ground?: string; deco: string[] }> = {
+  breakfast: { bg: "bg-amber-950/40",  ground: "",                                      deco: [] },
+  animals:   { bg: "bg-emerald-950/35",ground: "bg-green-900/40",                       deco: ["🌲 bottom-3 left-5","🌳 bottom-3 right-8","☁️ top-5 left-10","☁️ top-7 right-16"] },
+  beach:     { bg: "bg-sky-950/40",    ground: "bg-amber-200/15 rounded-b-[2rem]",      deco: ["🌊 bottom-2 left-4","🌊 bottom-2 right-6","☀️ top-3 right-8","⛅ top-5 left-12"] },
+  forest:    { bg: "bg-emerald-950/45",ground: "bg-green-900/35 border-t border-white/5",deco: ["🌿 bottom-1 left-5","🍄 bottom-3 right-9","✨ top-3 left-9 animate-pulse","✨ top-8 right-14 animate-pulse"] },
+  snowman:   { bg: "bg-sky-900/45",    ground: "bg-white/25 border-t border-white/20",  deco: ["❄️ top-3 left-7 animate-pulse","❄️ top-8 right-10 animate-pulse","❄️ bottom-16 left-14 animate-pulse"] },
+  puddles:   { bg: "bg-slate-900/45",  ground: "bg-blue-900/20 border-t border-white/5",deco: ["🌧️ top-3 left-5","🌧️ top-5 right-14","💧 bottom-14 left-18","💧 bottom-20 right-22"] },
+  gifts:     { bg: "bg-rose-950/35",   ground: "",                                      deco: [] },
+};
 
 export default function ActivityPage({ page, onNext, onBack }: ActivityPageProps) {
   const { choices, addChoice, removeChoice, clearChoices } = useStoryStore();
   const { play } = useSound();
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; color: string; size: number }[]>([]);
-  
+
   const selected = choices[page.category] || [];
   const selectedCount = selected.length;
   const isSelected = (id: string) => selected.includes(id);
@@ -80,533 +77,298 @@ export default function ActivityPage({ page, onNext, onBack }: ActivityPageProps
 
   const spawnSparkles = () => {
     const colors = ["#FFF9A6", "#FF90C1", "#4CAF50", "#2196F3", "#FF9F43", "#A180F4"];
-    const newParticles = Array.from({ length: 16 }, (_, i) => {
+    const ps = Array.from({ length: 16 }, (_, i) => {
       const angle = (i / 16) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
       const speed = Math.random() * 80 + 60;
-      return {
-        id: Date.now() + i + Math.random(),
-        x: Math.cos(angle) * speed,
-        y: Math.sin(angle) * speed,
-        color: colors[i % colors.length],
-        size: Math.random() * 6 + 4,
-      };
+      return { id: Date.now() + i + Math.random(), x: Math.cos(angle) * speed, y: Math.sin(angle) * speed, color: colors[i % colors.length], size: Math.random() * 6 + 4 };
     });
-    setParticles((prev) => [...prev, ...newParticles]);
-    setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => !newParticles.find((np) => np.id === p.id)));
-    }, 750);
+    setParticles((prev) => [...prev, ...ps]);
+    setTimeout(() => setParticles((prev) => prev.filter((p) => !ps.find((np) => np.id === p.id))), 750);
   };
 
   const handleTapItem = (item: StoryItem) => {
-    if (isSelected(item.id)) {
-      removeChoice(page.category, item.id);
-      play("click");
-    } else if (canAdd) {
-      addChoice(page.category, item.id);
-      play("drop");
-      spawnSparkles();
-    }
+    if (isSelected(item.id)) { removeChoice(page.category, item.id); play("click"); }
+    else if (canAdd) { addChoice(page.category, item.id); play("drop"); spawnSparkles(); }
   };
+  const handleRemoveItem = (id: string) => { removeChoice(page.category, id); play("click"); };
 
-  const handleRemoveItem = (id: string) => {
-    removeChoice(page.category, id);
-    play("click");
+  const sceneStyle = SCENE_STYLES[page.category] || SCENE_STYLES.animals;
+
+  const getPlacements = (id: string) => {
+    const maps: Record<string, Record<string, { top: string; left: string; rotate: number; scale: number }>> = {
+      animals: animalPlacements, beach: beachPlacements, forest: forestPlacements,
+      snowman: snowmanPlacements, puddles: puddlePlacements,
+    };
+    return maps[page.category]?.[id] || { top: "40%", left: "40%", rotate: 0, scale: 1 };
   };
-
-
 
   return (
-    <div className="flex flex-col md:flex-row w-full h-full">
-      {/* Left: instruction details narrative card */}
-      <div className="flex flex-col justify-between w-full md:w-1/2 p-6 md:p-12 overflow-y-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="my-auto max-w-xl mx-auto w-full p-4 md:p-8"
-        >
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-rose-800 bg-rose-100 px-3 py-1 rounded-full border border-rose-200/50">
-              Interactive Choice
+    <motion.div
+      className="w-full h-full flex flex-col md:flex-row items-stretch pt-14 md:pt-16 pb-4 px-4 md:px-10 gap-4 md:gap-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* LEFT — Instruction panel */}
+      <motion.div
+        className="flex flex-col w-full md:w-[38%] h-full"
+        initial={{ opacity: 0, x: -28 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <div className="flex-1 flex flex-col bg-black/35 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+          <div className="flex-1 px-6 pt-6 pb-4 overflow-y-auto scrollbar-hide">
+            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-300/80 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">
+              🎮 Interactive Choice
             </span>
             <h2
-              className="font-bold text-[#4A0E1B] mt-4 mb-3 leading-tight"
+              className="mt-4 mb-3 font-bold leading-tight"
               style={{
                 fontFamily: "'Fredoka', sans-serif",
-                fontSize: "clamp(24px, 3vw, 42px)",
+                fontSize: "clamp(22px, 2.8vw, 38px)",
+                background: "linear-gradient(135deg, #FDE68A 0%, #FCD34D 60%, #FCA5A5 100%)",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
               }}
             >
               {page.title}
             </h2>
-            <p
-              className="text-rose-950/80 font-medium"
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: "clamp(15px, 1.6vw, 20px)",
-              }}
-            >
+            <p className="text-white/70 font-medium leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(14px, 1.5vw, 18px)" }}>
               {page.instruction}
             </p>
 
             {page.maxItems > 1 && (
-              <div className="flex items-center gap-2 mt-4">
-                <div className="h-1.5 flex-1 bg-rose-950/10 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-rose-700 transition-all duration-300 rounded-full" 
-                    style={{ width: `${(selectedCount / page.maxItems) * 100}%` }}
+              <div className="flex items-center gap-2 mt-5">
+                <div className="h-2 flex-1 bg-white/10 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: "linear-gradient(90deg, #FCD34D, #F76B1C)" }}
+                    animate={{ width: `${(selectedCount / page.maxItems) * 100}%` }}
+                    transition={{ type: "spring", stiffness: 120 }}
                   />
                 </div>
-                <span className="text-xs font-bold text-rose-900 whitespace-nowrap">
-                  {selectedCount} / {page.maxItems} selected
-                </span>
+                <span className="text-xs font-bold text-amber-300/80 whitespace-nowrap">{selectedCount} / {page.maxItems}</span>
               </div>
             )}
           </div>
-          
-          <NavButtons
-            onBack={() => { clearChoices(page.category); onBack(); }}
-            onContinue={onNext}
-            continueDisabled={selectedCount === 0}
-          />
-        </motion.div>
-      </div>
 
-      {/* Right: interactive scene & items deck */}
-      <div className="flex flex-col items-center justify-between w-full md:w-1/2 p-6 overflow-y-auto relative bg-transparent">
-        {/* Soft atmospheric backlight */}
-        <div className="absolute top-10 w-[70%] h-[40%] rounded-full bg-white/10 blur-[80px] pointer-events-none" />
-        
-        {/* Sitting Mico Avatar */}
-        <div className="absolute top-4 right-4 z-20 opacity-90 hidden md:block" style={{ transform: 'scale(0.65)', transformOrigin: 'top right' }}>
-          <Character 
-            emoji="😎" 
-            imagePath="/images/mico-idle.png" 
-            animationState="sitting" 
-            size="normal"
-          />
+          {/* Nav footer */}
+          <div className="flex-shrink-0 px-6 py-4 border-t border-white/8 flex items-center justify-between gap-3">
+            <motion.button
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+              onClick={() => { clearChoices(page.category); onBack(); play("click"); }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-white/70 border border-white/15 bg-white/8 hover:bg-white/15 transition-colors cursor-pointer select-none"
+              style={{ fontFamily: "'Fredoka', sans-serif", fontSize: 15 }}
+            >
+              ← Back
+            </motion.button>
+            <motion.button
+              whileHover={selectedCount === 0 ? {} : { scale: 1.04 }}
+              whileTap={selectedCount === 0 ? {} : { scale: 0.96 }}
+              onClick={() => { if (selectedCount > 0) onNext(); }}
+              disabled={selectedCount === 0}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold cursor-pointer select-none shadow-lg transition-all"
+              style={{
+                fontFamily: "'Fredoka', sans-serif", fontSize: 16,
+                background: selectedCount === 0 ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #FAD961 0%, #F76B1C 100%)",
+                color: selectedCount === 0 ? "rgba(255,255,255,0.3)" : "#3a0d0d",
+                boxShadow: selectedCount === 0 ? "none" : "0 6px 20px -4px rgba(247,107,28,0.5)",
+                cursor: selectedCount === 0 ? "not-allowed" : "pointer",
+              }}
+            >
+              Continue →
+            </motion.button>
+          </div>
         </div>
+      </motion.div>
 
-        {/* Target Container Area */}
-        <div className="flex-1 w-full max-w-md flex items-center justify-center min-h-[260px] relative z-10">
-          
-          {/* Sparkles Overlay */}
+      {/* RIGHT — Interactive scene + item deck */}
+      <motion.div
+        className="flex flex-col w-full md:w-[62%] h-full gap-3"
+        initial={{ opacity: 0, x: 28 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        {/* Scene area */}
+        <div className="flex-1 relative rounded-3xl overflow-hidden border border-white/12 shadow-2xl min-h-[200px]">
+          {/* Scene background */}
+          <div className={`absolute inset-0 ${sceneStyle.bg} backdrop-blur-sm`} />
+
+          {/* Ground strip */}
+          {sceneStyle.ground && (
+            <div className={`absolute bottom-0 left-0 right-0 h-14 ${sceneStyle.ground}`} />
+          )}
+
+          {/* Scene decorations */}
+          {sceneStyle.deco.map((d, i) => {
+            const parts = d.split(" ");
+            const emoji = parts[0];
+            const classes = parts.slice(1).join(" ");
+            return <span key={i} className={`absolute text-2xl opacity-30 select-none ${classes}`}>{emoji}</span>;
+          })}
+
+          {/* Snowman body */}
+          {page.category === "snowman" && (
+            <div className="absolute flex flex-col items-center justify-end bottom-10 left-1/2 -translate-x-1/2 pointer-events-none">
+              <div className="w-20 h-20 bg-white/80 rounded-full shadow-inner mb-[-10px] z-10" />
+              <div className="w-28 h-28 bg-white/80 rounded-full shadow-inner mb-[-15px]" />
+              <div className="w-36 h-36 bg-white/80 rounded-full shadow-inner" />
+            </div>
+          )}
+
+          {/* Breakfast plate */}
+          {page.category === "breakfast" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-56 h-56 md:w-64 md:h-64 rounded-full bg-white border border-white/20 shadow-2xl flex items-center justify-center">
+                <div className="absolute w-[82%] h-[82%] rounded-full border border-stone-200/40 bg-stone-50/15 shadow-inner" />
+                {selectedCount === 0 && (
+                  <span className="text-stone-400/60 text-xs font-semibold text-center px-6 pointer-events-none select-none z-0">{page.dropLabel}</span>
+                )}
+                <AnimatePresence>
+                  {page.items.filter(i => isSelected(i.id)).map((item, idx) => {
+                    const pos = foodPlacements[idx] || { top: "35%", left: "35%", rotate: 0 };
+                    return (
+                      <motion.button
+                        layoutId={`item-fly-${item.id}`} key={item.id}
+                        className="absolute w-14 h-14 flex flex-col items-center justify-center bg-white/95 rounded-2xl shadow-md border border-stone-100 hover:scale-110 active:scale-95 cursor-pointer z-10"
+                        style={{ top: pos.top, left: pos.left }}
+                        initial={{ scale: 0, rotate: pos.rotate - 30 }}
+                        animate={{ scale: 1, rotate: pos.rotate }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ type: "spring", damping: 14, stiffness: 180 }}
+                        onClick={() => handleRemoveItem(item.id)}
+                      >
+                        {item.imagePath ? <img src={item.imagePath} alt={item.label} className="w-9 h-9 object-contain drop-shadow-md select-none pointer-events-none" /> : <span className="text-3xl select-none">{item.emoji}</span>}
+                        <span className="text-[7px] font-bold text-rose-900 mt-0.5 uppercase tracking-wide">{item.label}</span>
+                      </motion.button>
+                    );
+                  })}
+                </AnimatePresence>
+              </div>
+            </div>
+          )}
+
+          {/* Gift box */}
+          {page.category === "gifts" && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative w-56 h-56 rounded-[2rem] bg-rose-950/30 border border-white/20 shadow-2xl flex items-center justify-center">
+                <div className="absolute inset-4 rounded-[1.5rem] border border-dashed border-white/10 flex items-center justify-center">
+                  <span className="text-[80px] opacity-8 pointer-events-none select-none">🎁</span>
+                </div>
+                {selectedCount === 0 && <span className="text-white/40 text-xs font-semibold text-center px-4 pointer-events-none select-none z-0">{page.dropLabel}</span>}
+                <AnimatePresence>
+                  {page.items.filter(i => isSelected(i.id)).map((item) => (
+                    <motion.button
+                      layoutId={`item-fly-${item.id}`} key={item.id}
+                      className="absolute w-32 h-32 flex flex-col items-center justify-center bg-white border border-rose-100 rounded-[1.5rem] shadow-2xl hover:scale-105 active:scale-95 cursor-pointer z-10"
+                      initial={{ scale: 0, rotate: -25 }} animate={{ scale: 1, rotate: 5 }} exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", damping: 14, stiffness: 150 }}
+                      onClick={() => handleRemoveItem(item.id)}
+                    >
+                      <span className="absolute top-2 right-2 text-base animate-pulse">✨</span>
+                      {item.imagePath ? <img src={item.imagePath} alt={item.label} className="w-14 h-14 object-contain drop-shadow-md select-none pointer-events-none" /> : <span className="text-5xl select-none">{item.emoji}</span>}
+                      <span className="text-[9px] font-extrabold text-[#4A0E1B] mt-1.5 uppercase tracking-widest">{item.label}</span>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          )}
+
+          {/* All other scattered scenes */}
+          {!["breakfast", "gifts"].includes(page.category) && (
+            <>
+              {selectedCount === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-white/30 text-sm font-semibold text-center select-none">{page.dropLabel}</span>
+                </div>
+              )}
+              <AnimatePresence>
+                {page.items.filter(i => isSelected(i.id)).map((item) => {
+                  const pos = getPlacements(item.id);
+                  return (
+                    <motion.button
+                      layoutId={`item-fly-${item.id}`} key={item.id}
+                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-10"
+                      style={{ top: pos.top, left: pos.left }}
+                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
+                      animate={{ scale: pos.scale, rotate: pos.rotate }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
+                      onClick={() => handleRemoveItem(item.id)}
+                    >
+                      {item.imagePath
+                        ? <img src={item.imagePath} alt={item.label} className="w-12 h-12 object-contain drop-shadow-md select-none pointer-events-none" />
+                        : <span className="text-4xl md:text-5xl filter drop-shadow-md select-none">{item.emoji}</span>
+                      }
+                      {page.category !== "snowman" && (
+                        <span className="text-[8px] font-bold text-white bg-black/35 rounded-full px-1.5 mt-1 select-none whitespace-nowrap">
+                          {item.label} ✕
+                        </span>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </AnimatePresence>
+            </>
+          )}
+
+          {/* Sparkles overlay */}
           <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
             <AnimatePresence>
               {particles.map((p) => (
-                <motion.div
-                  key={p.id}
-                  className="absolute rounded-full"
-                  style={{
-                    background: p.color,
-                    width: p.size,
-                    height: p.size,
-                  }}
+                <motion.div key={p.id} className="absolute rounded-full"
+                  style={{ background: p.color, width: p.size, height: p.size }}
                   initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-                  animate={{
-                    x: p.x,
-                    y: p.y,
-                    opacity: 0,
-                    scale: 0.1,
-                  }}
+                  animate={{ x: p.x, y: p.y, opacity: 0, scale: 0.1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.75, ease: "easeOut" }}
                 />
               ))}
             </AnimatePresence>
           </div>
-
-          {/* BREAKFAST PLATE SCENE */}
-          {page.category === "breakfast" && (
-            <div className="relative w-64 h-64 md:w-72 md:h-72 rounded-full bg-white border border-white/20 shadow-2xl flex items-center justify-center flex-shrink-0">
-              {/* Inner plate ridge */}
-              <div className="absolute w-[82%] h-[82%] rounded-full border border-stone-200/50 bg-stone-50/20 shadow-inner" />
-              
-              {selectedCount === 0 && (
-                <span className="text-stone-400 text-sm font-semibold tracking-wider text-center px-6 pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Items on plate */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item, idx) => {
-                  const pos = foodPlacements[idx] || { top: "35%", left: "35%", rotate: 0 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute w-16 h-16 flex flex-col items-center justify-center bg-white/95 rounded-2xl shadow-md border border-stone-100 hover:scale-110 active:scale-95 cursor-pointer z-10"
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                      }}
-                      initial={{ scale: 0, rotate: pos.rotate - 30 }}
-                      animate={{ scale: 1, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 14, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Remove ${item.label}`}
-                    >
-                      {item.imagePath ? (
-                        <img src={item.imagePath} alt={item.label} className="w-10 h-10 object-contain drop-shadow-md select-none pointer-events-none" />
-                      ) : (
-                        <span className="text-3xl select-none">{item.emoji}</span>
-                      )}
-                      <span className="text-[8px] font-bold text-rose-900 mt-1 uppercase tracking-wider">{item.label}</span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* MEADOW SCENE */}
-          {page.category === "animals" && (
-            <div className="relative w-full aspect-video md:aspect-[4/3] rounded-[2rem] border border-white/20 bg-emerald-950/20 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center">
-              
-              {/* Scenic elements (trees & flowers) */}
-              <span className="absolute bottom-4 left-6 text-2xl opacity-40 select-none">🌲</span>
-              <span className="absolute bottom-6 right-8 text-2xl opacity-40 select-none">🌳</span>
-              <span className="absolute top-6 left-12 text-lg opacity-25 select-none">☁️</span>
-              <span className="absolute top-8 right-20 text-lg opacity-25 select-none">☁️</span>
-              
-              {selectedCount === 0 && (
-                <span className="text-white/40 text-sm font-semibold tracking-wider text-center pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Animals in Meadow */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => {
-                  const pos = animalPlacements[item.id] || { top: "50%", left: "50%", rotate: 0, scale: 1 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-10"
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                      }}
-                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
-                      animate={{ scale: pos.scale, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Greet/Remove ${item.label}`}
-                    >
-                      {item.imagePath ? (
-                        <img src={item.imagePath} alt={item.label} className="w-12 h-12 object-contain drop-shadow-md select-none pointer-events-none" />
-                      ) : (
-                        <span className="text-4xl md:text-5xl filter drop-shadow-md select-none">{item.emoji}</span>
-                      )}
-                      <span className="text-[8px] font-bold text-white bg-black/30 rounded-full px-1.5 mt-1 select-none whitespace-nowrap">
-                        {item.label} ✕
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* BEACH BUCKET SCENE */}
-          {page.category === "beach" && (
-            <div className="relative w-full aspect-video md:aspect-[4/3] rounded-[2rem] border border-white/20 bg-sky-950/30 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center">
-              {/* Scenic beach elements */}
-              <span className="absolute bottom-3 left-4 text-2xl opacity-40 select-none">🌊</span>
-              <span className="absolute bottom-3 right-6 text-2xl opacity-40 select-none">🌊</span>
-              <span className="absolute top-4 right-10 text-lg opacity-25 select-none">☀️</span>
-              <span className="absolute top-6 left-14 text-lg opacity-20 select-none">⛅</span>
-              {/* Sandy ground */}
-              <div className="absolute bottom-0 left-0 right-0 h-12 bg-amber-200/20 rounded-b-[2rem]" />
-
-              {selectedCount === 0 && (
-                <span className="text-white/40 text-sm font-semibold tracking-wider text-center pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Beach treasures scattered on shore */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => {
-                  const pos = beachPlacements[item.id] || { top: "50%", left: "50%", rotate: 0, scale: 1 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-10"
-                      style={{ top: pos.top, left: pos.left }}
-                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
-                      animate={{ scale: pos.scale, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Remove ${item.label}`}
-                    >
-                      <span className="text-4xl md:text-5xl filter drop-shadow-md select-none">{item.emoji}</span>
-                      <span className="text-[8px] font-bold text-white bg-black/30 rounded-full px-1.5 mt-1 select-none whitespace-nowrap">
-                        {item.label} ✕
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* FOREST SCENE */}
-          {page.category === "forest" && (
-            <div className="relative w-full aspect-video md:aspect-[4/3] rounded-[2rem] border border-white/20 bg-emerald-950/40 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center">
-              {/* Scenic forest elements */}
-              <span className="absolute bottom-2 left-6 text-3xl opacity-30 select-none">🌿</span>
-              <span className="absolute bottom-4 right-10 text-2xl opacity-30 select-none">🍄</span>
-              <span className="absolute top-4 left-10 text-lg opacity-40 select-none animate-pulse">✨</span>
-              <span className="absolute top-10 right-16 text-xl opacity-40 select-none animate-pulse">✨</span>
-              {/* Mossy ground */}
-              <div className="absolute bottom-0 left-0 right-0 h-14 bg-green-900/30 rounded-b-[2rem] border-t border-white/5" />
-
-              {selectedCount === 0 && (
-                <span className="text-white/40 text-sm font-semibold tracking-wider text-center pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Forest treasures in the pouch */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => {
-                  const pos = forestPlacements[item.id] || { top: "50%", left: "50%", rotate: 0, scale: 1 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-10"
-                      style={{ top: pos.top, left: pos.left }}
-                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
-                      animate={{ scale: pos.scale, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Remove ${item.label}`}
-                    >
-                      <span className="text-4xl md:text-5xl filter drop-shadow-lg select-none">{item.emoji}</span>
-                      <span className="text-[8px] font-bold text-white bg-black/40 rounded-full px-1.5 mt-1 select-none whitespace-nowrap">
-                        {item.label} ✕
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* SNOWMAN SCENE */}
-          {page.category === "snowman" && (
-            <div className="relative w-full aspect-video md:aspect-[4/3] rounded-[2rem] border border-white/20 bg-sky-900/40 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center">
-              {/* Snowfall elements */}
-              <span className="absolute top-4 left-8 text-2xl opacity-40 select-none animate-pulse">❄️</span>
-              <span className="absolute top-10 right-12 text-3xl opacity-30 select-none animate-pulse">❄️</span>
-              <span className="absolute bottom-20 left-16 text-xl opacity-50 select-none animate-pulse">❄️</span>
-              {/* Snowy ground */}
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-white/30 rounded-b-[2rem] border-t border-white/20" />
-              
-              {/* Base snowman body (rendered if nothing selected or behind items) */}
-              <div className="absolute flex flex-col items-center justify-end bottom-12 pointer-events-none">
-                <div className="w-20 h-20 bg-white/80 rounded-full shadow-inner mb-[-10px] z-10" /> {/* Head */}
-                <div className="w-28 h-28 bg-white/80 rounded-full shadow-inner mb-[-15px]" />     {/* Torso */}
-                <div className="w-36 h-36 bg-white/80 rounded-full shadow-inner" />                 {/* Base */}
-              </div>
-
-              {selectedCount === 0 && (
-                <span className="text-white/60 text-sm font-semibold tracking-wider text-center pointer-events-none select-none z-0 mt-32">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Snowman accessories */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => {
-                  const pos = snowmanPlacements[item.id] || { top: "50%", left: "50%", rotate: 0, scale: 1 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-20 -translate-x-1/2 -translate-y-1/2"
-                      style={{ top: pos.top, left: pos.left }}
-                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
-                      animate={{ scale: pos.scale, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Remove ${item.label}`}
-                    >
-                      <span className="text-5xl md:text-6xl filter drop-shadow-md select-none">{item.emoji}</span>
-                      {/* Hide label for snowman pieces to make it look cleaner */}
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* RAIN PUDDLE SCENE */}
-          {page.category === "puddles" && (
-            <div className="relative w-full aspect-video md:aspect-[4/3] rounded-[2rem] border border-white/20 bg-slate-900/40 backdrop-blur-sm shadow-2xl overflow-hidden flex items-center justify-center">
-              {/* Rain clouds & drops */}
-              <span className="absolute top-4 left-6 text-3xl opacity-20 select-none animate-bounce">🌧️</span>
-              <span className="absolute top-6 right-16 text-3xl opacity-20 select-none animate-bounce">🌧️</span>
-              <span className="absolute bottom-16 left-20 text-xl opacity-30 select-none">💧</span>
-              <span className="absolute bottom-24 right-24 text-xl opacity-30 select-none">💧</span>
-              
-              {/* Water ground */}
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-blue-900/20 rounded-b-[2rem] border-t border-white/5" />
-              
-              {selectedCount === 0 && (
-                <span className="text-white/40 text-sm font-semibold tracking-wider text-center pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Rain treasures */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => {
-                  const pos = puddlePlacements[item.id] || { top: "50%", left: "50%", rotate: 0, scale: 1 };
-                  return (
-                    <motion.button
-                      layoutId={`item-fly-${item.id}`}
-                      key={item.id}
-                      className="absolute flex flex-col items-center justify-center cursor-pointer p-2 rounded-2xl hover:bg-white/10 active:scale-95 z-10"
-                      style={{ top: pos.top, left: pos.left }}
-                      initial={{ scale: 0, rotate: pos.rotate - 20 }}
-                      animate={{ scale: pos.scale, rotate: pos.rotate }}
-                      exit={{ scale: 0, opacity: 0 }}
-                      transition={{ type: "spring", damping: 15, stiffness: 180 }}
-                      onClick={() => handleRemoveItem(item.id)}
-                      title={`Remove ${item.label}`}
-                    >
-                      <span className="text-4xl md:text-5xl filter drop-shadow-md select-none">{item.emoji}</span>
-                      <span className="text-[8px] font-bold text-white bg-black/30 rounded-full px-1.5 mt-1 select-none whitespace-nowrap">
-                        {item.label} ✕
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          )}
-
-          {/* GIFT BOX SCENE */}
-          {page.category === "gifts" && (
-            <div className="relative w-64 h-64 md:w-72 md:h-72 rounded-[2rem] bg-rose-950/20 backdrop-blur-sm border border-white/20 shadow-2xl flex flex-col items-center justify-center">
-              
-              {/* Outer Gift Ribbon Backdrop */}
-              <div className="absolute inset-4 rounded-[1.5rem] border border-dashed border-white/10 flex items-center justify-center">
-                <span className="text-[100px] opacity-10 pointer-events-none select-none">🎁</span>
-              </div>
-
-              {selectedCount === 0 && (
-                <span className="text-white/40 text-sm font-semibold tracking-wider text-center px-4 pointer-events-none select-none z-0">
-                  {page.dropLabel}
-                </span>
-              )}
-
-              {/* Gift inside Box */}
-              <AnimatePresence>
-                {page.items.filter(item => isSelected(item.id)).map((item) => (
-                  <motion.button
-                    layoutId={`item-fly-${item.id}`}
-                    key={item.id}
-                    className="absolute w-36 h-36 flex flex-col items-center justify-center bg-white border border-rose-100 rounded-[2rem] shadow-2xl hover:scale-105 active:scale-95 cursor-pointer z-10"
-                    initial={{ scale: 0, rotate: -25 }}
-                    animate={{ scale: 1, rotate: 5 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: "spring", damping: 14, stiffness: 150 }}
-                    onClick={() => handleRemoveItem(item.id)}
-                    title={`Remove ${item.label}`}
-                  >
-                    {/* Sparkle sparkles */}
-                    <span className="absolute top-2 right-2 text-lg animate-pulse">✨</span>
-                    {item.imagePath ? (
-                      <img src={item.imagePath} alt={item.label} className="w-16 h-16 object-contain drop-shadow-md select-none pointer-events-none" />
-                    ) : (
-                      <span className="text-6xl filter drop-shadow-md select-none">{item.emoji}</span>
-                    )}
-                    <span className="text-[10px] font-extrabold text-[#4A0E1B] mt-2 uppercase tracking-widest">{item.label}</span>
-                  </motion.button>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-
         </div>
 
-        {/* Choice Grid Deck */}
-        <div className="w-full max-w-md bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl p-5 mt-4 z-10">
-          <div className="grid grid-cols-3 gap-3">
+        {/* Item selection deck */}
+        <div className="flex-shrink-0 bg-black/30 backdrop-blur-xl border border-white/10 rounded-3xl p-4 shadow-xl">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {page.items.map((item) => {
               const active = isSelected(item.id);
               const disabled = !active && !canAdd;
-
               return (
-                <motion.div
-                  key={item.id}
-                  whileHover={disabled || active ? {} : { y: -4, scale: 1.03 }}
-                  whileTap={disabled || active ? {} : { scale: 0.95 }}
-                >
+                <motion.div key={item.id} whileHover={disabled || active ? {} : { y: -4, scale: 1.04 }} whileTap={disabled || active ? {} : { scale: 0.94 }}>
                   <button
                     onClick={() => handleTapItem(item)}
                     disabled={disabled}
-                    className="w-full aspect-square bg-white rounded-2xl flex flex-col items-center justify-center p-2 relative shadow-md transition-all duration-300 border-2"
+                    className="w-full aspect-square bg-white rounded-2xl flex flex-col items-center justify-center p-2 relative shadow-md transition-all duration-200 border-2"
                     style={{
-                      borderColor: active 
-                        ? "#FCD34D" 
-                        : "rgba(255, 255, 255, 0.4)",
-                      opacity: active ? 0.35 : disabled ? 0.35 : 1,
+                      borderColor: active ? "#FCD34D" : "rgba(255,255,255,0.35)",
+                      opacity: disabled ? 0.4 : 1,
                       cursor: disabled ? "not-allowed" : active ? "default" : "pointer",
-                      boxShadow: active ? "0 0 15px rgba(252,211,77,0.4)" : "0 4px 6px rgba(0,0,0,0.06)",
+                      boxShadow: active ? "0 0 16px rgba(252,211,77,0.45)" : "0 4px 8px rgba(0,0,0,0.08)",
                     }}
-                    role="checkbox"
-                    aria-checked={active}
-                    aria-label={item.label}
+                    aria-checked={active} aria-label={item.label}
                   >
-                    {/* Shared layout emoji — hidden when active so it can fly to the target */}
                     {!active && (
-                      <motion.span 
-                        layoutId={`item-fly-${item.id}`}
-                        className="text-4xl leading-none select-none filter drop-shadow-sm"
-                      >
-                        {item.imagePath ? (
-                          <img src={item.imagePath} alt={item.label} className="w-10 h-10 object-contain drop-shadow-sm select-none pointer-events-none" />
-                        ) : (
-                          item.emoji
-                        )}
+                      <motion.span layoutId={`item-fly-${item.id}`} className="text-3xl leading-none select-none filter drop-shadow-sm">
+                        {item.imagePath
+                          ? <img src={item.imagePath} alt={item.label} className="w-9 h-9 object-contain select-none pointer-events-none" />
+                          : item.emoji
+                        }
                       </motion.span>
                     )}
-
-                    {/* Ghost emoji shown in-place while item is selected on the target */}
                     {active && (
-                      <span className="text-4xl leading-none select-none opacity-20">
-                        {item.imagePath ? (
-                          <img src={item.imagePath} alt={item.label} className="w-10 h-10 object-contain select-none pointer-events-none grayscale opacity-60" />
-                        ) : (
-                          item.emoji
-                        )}
+                      <span className="text-3xl leading-none select-none opacity-20">
+                        {item.imagePath
+                          ? <img src={item.imagePath} alt={item.label} className="w-9 h-9 object-contain select-none pointer-events-none grayscale opacity-60" />
+                          : item.emoji
+                        }
                       </span>
                     )}
-
-                    <span
-                      className="text-center font-bold mt-2 px-1 leading-tight select-none"
-                      style={{ fontSize: 10, color: "#4A0E1B" }}
-                    >
+                    <span className="text-center font-bold mt-1.5 px-1 leading-tight select-none" style={{ fontSize: 9, color: "#4A0E1B" }}>
                       {item.label}
                     </span>
-
-                    {/* Active Check badge */}
                     {active && (
-                      <div className="absolute top-1 right-1 w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center border border-white text-[9px] font-bold text-[#4A0E1B]">
-                        ✓
-                      </div>
+                      <div className="absolute top-1 right-1 w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center border border-white text-[9px] font-bold text-amber-900">✓</div>
                     )}
                   </button>
                 </motion.div>
@@ -614,8 +376,7 @@ export default function ActivityPage({ page, onNext, onBack }: ActivityPageProps
             })}
           </div>
         </div>
-
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
