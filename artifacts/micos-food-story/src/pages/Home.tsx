@@ -155,55 +155,17 @@ export default function Home() {
   return (
     <main className="w-screen h-screen overflow-hidden relative">
       <AnimatedBackground theme={pageTheme} />
-      {/* Global Settings & Sound Control */}
-      <div className="absolute top-3 right-4 z-50 flex items-center gap-2">
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={() => {
-            toggleNarration();
-            play("click");
-          }}
-          className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-white/20 transition-all select-none"
-          title={narrationEnabled ? "Mute Narration" : "Read Story to Me"}
-          aria-label={narrationEnabled ? "Mute Narration" : "Read Story to Me"}
-        >
-          <span className="text-sm">{narrationEnabled ? "📢" : "🔕"}</span>
-        </motion.button>
-
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.92 }}
-          onClick={toggleSound}
-          className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-white/20 transition-all select-none"
-          title={soundEnabled ? "Mute Sounds" : "Unmute Sounds"}
-          aria-label={soundEnabled ? "Mute Sounds" : "Unmute Sounds"}
-        >
-          <span className="text-sm">{soundEnabled ? "🔊" : "🔇"}</span>
-        </motion.button>
-
-        {currentPageId !== "title" && (
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            onClick={() => {
-              if (confirm("Are you sure you want to start over from the beginning?")) {
-                resetStory();
-                play("click");
-              }
-            }}
-            className="w-9 h-9 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-white/20 transition-all select-none"
-            title="Start Over"
-            aria-label="Start Over"
-          >
-            <span className="text-sm">🏠</span>
-          </motion.button>
-        )}
-      </div>
-
       {pageData.type !== "end" && (
         <div className="absolute top-0 left-0 right-0 z-50">
-          <ProgressBar currentPageId={currentPageId} />
+          <ProgressBar
+            currentPageId={currentPageId}
+            soundEnabled={soundEnabled}
+            toggleSound={toggleSound}
+            narrationEnabled={narrationEnabled}
+            toggleNarration={toggleNarration}
+            onReset={resetStory}
+            onPlay={play}
+          />
         </div>
       )}
 

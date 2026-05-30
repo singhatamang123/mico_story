@@ -4,9 +4,23 @@ import { useStoryStore } from "@/store/storyStore";
 
 interface ProgressBarProps {
   currentPageId: string;
+  soundEnabled: boolean;
+  toggleSound: () => void;
+  narrationEnabled: boolean;
+  toggleNarration: () => void;
+  onReset: () => void;
+  onPlay: (sound: string) => void;
 }
 
-export default function ProgressBar({ currentPageId }: ProgressBarProps) {
+export default function ProgressBar({
+  currentPageId,
+  soundEnabled,
+  toggleSound,
+  narrationEnabled,
+  toggleNarration,
+  onReset,
+  onPlay,
+}: ProgressBarProps) {
   const { chosenPath, selectedSeason } = useStoryStore();
 
   let activePath = PARK_PATH;
@@ -24,26 +38,26 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
 
   if (selectedSeason === "winter") {
     chapters = [
-      { pageId: "title", label: "Start", index: activePath.indexOf("title"), emoji: "🎬" },
-      { pageId: "winter-morning", label: "Breakfast", index: activePath.indexOf("winter-morning"), emoji: "🥣" },
-      { pageId: "winter-story", label: "Snow", index: activePath.indexOf("winter-story"), emoji: "⛄" },
-      { pageId: "winter-giftshop", label: "Gift", index: activePath.indexOf("winter-giftshop"), emoji: "🎁" },
-      { pageId: "winter-end", label: "End", index: activePath.indexOf("winter-end"), emoji: "🏆" },
+      { pageId: "title",         label: "Start",     index: activePath.indexOf("title"),         emoji: "🎬" },
+      { pageId: "winter-morning",label: "Breakfast", index: activePath.indexOf("winter-morning"), emoji: "🥣" },
+      { pageId: "winter-story",  label: "Snow",      index: activePath.indexOf("winter-story"),   emoji: "⛄" },
+      { pageId: "winter-giftshop",label:"Gift",      index: activePath.indexOf("winter-giftshop"),emoji: "🎁" },
+      { pageId: "winter-end",    label: "End",       index: activePath.indexOf("winter-end"),     emoji: "🏆" },
     ];
   } else if (selectedSeason === "rain") {
     chapters = [
-      { pageId: "title", label: "Start", index: activePath.indexOf("title"), emoji: "🎬" },
-      { pageId: "rain-morning", label: "Breakfast", index: activePath.indexOf("rain-morning"), emoji: "🥣" },
-      { pageId: "rainy-day-story", label: "Puddles", index: activePath.indexOf("rainy-day-story"), emoji: "☔" },
-      { pageId: "rain-giftshop", label: "Gift", index: activePath.indexOf("rain-giftshop"), emoji: "🎁" },
-      { pageId: "rain-end", label: "End", index: activePath.indexOf("rain-end"), emoji: "🏆" },
+      { pageId: "title",          label: "Start",     index: activePath.indexOf("title"),          emoji: "🎬" },
+      { pageId: "rain-morning",   label: "Breakfast", index: activePath.indexOf("rain-morning"),   emoji: "🥣" },
+      { pageId: "rainy-day-story",label: "Puddles",   index: activePath.indexOf("rainy-day-story"),emoji: "☔" },
+      { pageId: "rain-giftshop",  label: "Gift",      index: activePath.indexOf("rain-giftshop"),  emoji: "🎁" },
+      { pageId: "rain-end",       label: "End",       index: activePath.indexOf("rain-end"),       emoji: "🏆" },
     ];
   } else {
     const isBeach = chosenPath === "beach";
     const isForest = chosenPath === "forest";
-    const midId = isBeach ? "beach" : isForest ? "forest" : "meadow";
-    const midLabel = isBeach ? "Beach" : isForest ? "Forest" : "Picnic";
-    const midEmoji = isBeach ? "🏖️" : isForest ? "🌲" : "🧺";
+    const midId    = isBeach ? "beach"  : isForest ? "forest"  : "meadow";
+    const midLabel = isBeach ? "Beach"  : isForest ? "Forest"  : "Picnic";
+    const midEmoji = isBeach ? "🏖️"    : isForest ? "🌲"      : "🧺";
     chapters = [
       { pageId: "title",    label: "Start",     index: activePath.indexOf("title"),    emoji: "🎬" },
       { pageId: "morning",  label: "Breakfast", index: activePath.indexOf("morning"),  emoji: "🥞" },
@@ -58,14 +72,16 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
     if (safeIndex >= chapters[i].index) { activeChapterLabel = chapters[i].label; break; }
   }
 
+  const btnCls = "w-8 h-8 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/20 text-white shadow cursor-pointer hover:bg-white/25 transition-all select-none flex-shrink-0";
+
   return (
     <motion.div
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="w-full px-6 py-2.5"
+      className="w-full px-4 py-2"
       style={{
-        background: "linear-gradient(to bottom, rgba(10,5,3,0.82) 0%, rgba(10,5,3,0.0) 100%)",
+        background: "linear-gradient(to bottom, rgba(10,5,3,0.88) 0%, rgba(10,5,3,0.0) 100%)",
         backdropFilter: "blur(8px)",
       }}
       role="progressbar"
@@ -74,11 +90,11 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
       aria-valuemax={100}
       aria-label={`Story progress: ${Math.round(progress)}%`}
     >
-      <div className="max-w-3xl mx-auto flex items-center gap-4">
+      <div className="max-w-5xl mx-auto flex items-center gap-3">
 
-        {/* Label pill */}
-        <div className="flex-shrink-0 flex items-center gap-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-amber-300/70 whitespace-nowrap hidden sm:block">
+        {/* Chapter label pill */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-amber-300/70 hidden md:block whitespace-nowrap">
             Mico's Journey
           </span>
           <AnimatePresence mode="wait">
@@ -96,8 +112,6 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
 
         {/* Bar track */}
         <div className="relative flex-1 h-2.5 rounded-full bg-white/10 border border-white/10 shadow-inner overflow-visible">
-
-          {/* Glow fill */}
           <motion.div
             className="absolute top-0 left-0 h-full rounded-full"
             style={{
@@ -109,7 +123,6 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           />
 
-          {/* Chapter milestone dots */}
           {chapters.map((ch) => {
             const dotPct = (ch.index / (totalPages - 1)) * 100;
             const isReached = safeIndex >= ch.index;
@@ -125,8 +138,8 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
                 <motion.div
                   className="flex items-center justify-center rounded-full border-2 shadow-lg"
                   style={{
-                    width: isActive ? 30 : 24,
-                    height: isActive ? 30 : 24,
+                    width: isActive ? 28 : 22,
+                    height: isActive ? 28 : 22,
                     background: isReached
                       ? "linear-gradient(135deg, #FDE68A, #F59E0B)"
                       : "rgba(30,15,10,0.85)",
@@ -145,11 +158,9 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
                   transition={{ type: "spring", damping: 10 }}
                   title={ch.label}
                 >
-                  <span className="text-[11px] select-none leading-none">{ch.emoji}</span>
+                  <span className="text-[10px] select-none leading-none">{ch.emoji}</span>
                 </motion.div>
-
-                {/* Tooltip */}
-                <div className="absolute top-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-black/85 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/10 shadow-lg whitespace-nowrap z-30">
+                <div className="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-black/85 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/10 shadow-lg whitespace-nowrap z-30">
                   {ch.label}
                 </div>
               </div>
@@ -157,9 +168,39 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
           })}
         </div>
 
-        {/* Percent badge */}
-        <div className="flex-shrink-0 text-[11px] font-bold text-white/50 tabular-nums w-8 text-right hidden sm:block">
-          {Math.round(progress)}%
+        {/* Control buttons — live in the same strip, no overlap */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <motion.button
+            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+            onClick={() => { toggleNarration(); onPlay("click"); }}
+            className={btnCls}
+            title={narrationEnabled ? "Mute Narration" : "Read Story to Me"}
+          >
+            <span className="text-xs">{narrationEnabled ? "📢" : "🔕"}</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+            onClick={toggleSound}
+            className={btnCls}
+            title={soundEnabled ? "Mute Sounds" : "Unmute Sounds"}
+          >
+            <span className="text-xs">{soundEnabled ? "🔊" : "🔇"}</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+            onClick={() => {
+              if (confirm("Start over from the beginning?")) {
+                onReset();
+                onPlay("click");
+              }
+            }}
+            className={btnCls}
+            title="Start Over"
+          >
+            <span className="text-xs">🏠</span>
+          </motion.button>
         </div>
       </div>
     </motion.div>
