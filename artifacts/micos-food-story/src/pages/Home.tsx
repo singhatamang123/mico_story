@@ -122,10 +122,13 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageId, narrationEnabled, speak, stop]);
 
-  const isSeasonSelect = pageData.type === "season-select";
-  const isStoryPage    = pageData.type === "story";
-  const isActivityPage = pageData.type === "activity";
-  const isFullScreen   = isTitle || isSeasonSelect || isStoryPage || isActivityPage;
+  const isSeasonSelect  = pageData.type === "season-select";
+  const isStoryPage     = pageData.type === "story";
+  const isActivityPage  = pageData.type === "activity";
+  const isChoicePage    = pageData.type === "choice";
+  const isFeedbackPage  = pageData.type === "feedback";
+  const isEndPage       = pageData.type === "end";
+  const isFullScreen    = isTitle || isSeasonSelect || isStoryPage || isActivityPage || isChoicePage || isFeedbackPage || isEndPage;
 
   if (isFullScreen) {
     const bgTheme = isTitle ? "title" : pageTheme;
@@ -194,6 +197,25 @@ export default function Home() {
             page={pageData as import("@/data/pages").ActivityPageData}
             onNext={() => navigate("next")}
             onBack={() => navigate("back")}
+          />
+        )}
+        {isChoicePage && (
+          <ChoicePage
+            page={pageData as import("@/data/pages").ChoicePageData}
+            onBack={handleBack}
+          />
+        )}
+        {isFeedbackPage && (
+          <FeedbackPage
+            page={pageData as import("@/data/pages").FeedbackPageData}
+            onNext={() => navigate("next")}
+            onBack={() => navigate("back")}
+          />
+        )}
+        {isEndPage && (
+          <EndPage
+            page={pageData as import("@/data/pages").EndPageData}
+            onRestart={() => goToPage("title")}
           />
         )}
       </main>
