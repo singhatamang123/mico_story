@@ -70,12 +70,13 @@ const THEME_COLORS: Record<string, { base: string; glows: string[]; particles: s
 
 export default function AnimatedBackground({ theme = "default" }: AnimatedBackgroundProps) {
   const themeColors = THEME_COLORS[theme] || THEME_COLORS.default;
-  const [particles, setParticles] = useState<{ id: number; x: number; speed: number; size: number; color: string; emoji?: string; type: "dot" | "emoji" }[]>([]);
+  const [particles, setParticles] = useState<{ id: number; x: number; startY: number; speed: number; size: number; color: string; emoji?: string; type: "dot" | "emoji" }[]>([]);
 
   useEffect(() => {
     const dots = Array.from({ length: 25 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
+      startY: 30 + Math.random() * 70,
       speed: Math.random() * 18 + 12,
       size: Math.random() * 5 + 2,
       color: themeColors.particles[Math.floor(Math.random() * themeColors.particles.length)],
@@ -84,6 +85,7 @@ export default function AnimatedBackground({ theme = "default" }: AnimatedBackgr
     const emojiParts = Array.from({ length: 12 }, (_, i) => ({
       id: i + 100,
       x: Math.random() * 100,
+      startY: 20 + Math.random() * 75,
       speed: Math.random() * 22 + 18,
       size: Math.random() * 8 + 14,
       color: themeColors.particles[Math.floor(Math.random() * themeColors.particles.length)],
@@ -131,19 +133,20 @@ export default function AnimatedBackground({ theme = "default" }: AnimatedBackgr
               width: p.size,
               height: p.size,
               left: `${p.x}%`,
+              top: `${p.startY}%`,
               background: p.color,
               boxShadow: `0 0 ${p.size * 3}px ${p.color}`,
             }}
             animate={{
-              y: [0, -40, 0],
-              opacity: [0, 0.7, 0],
-              scale: [1, 1.8, 1],
+              y: ["0%", "-120px", "0%"],
+              opacity: [0, 0.75, 0],
+              scale: [0.8, 2, 0.8],
             }}
             transition={{
               duration: p.speed,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: p.id * 0.25,
+              delay: p.id * 0.3,
             }}
           />
         ) : (
@@ -152,19 +155,20 @@ export default function AnimatedBackground({ theme = "default" }: AnimatedBackgr
             className="absolute select-none"
             style={{
               left: `${p.x}%`,
+              top: `${p.startY}%`,
               fontSize: p.size,
-              filter: "drop-shadow(0 0 4px rgba(255,255,255,0.3))",
+              filter: "drop-shadow(0 0 5px rgba(255,255,255,0.4))",
             }}
             animate={{
-              y: [0, -50, 0],
-              opacity: [0, 0.8, 0],
+              y: ["0%", "-100px", "0%"],
+              opacity: [0, 0.85, 0],
               rotate: [0, 360],
             }}
             transition={{
               duration: p.speed,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: p.id * 0.15,
+              delay: p.id * 0.18,
             }}
           >
             {p.emoji}
