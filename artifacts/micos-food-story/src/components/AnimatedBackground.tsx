@@ -13,10 +13,10 @@ const THEME_COLORS: Record<string, { base: string; glows: string[]; particles: s
     sparkleEmojis: ["⭐", "✨", "🌟", "💫", "🌸", "🦋"],
   },
   title: {
-    base: "from-[#1a0f0a] via-[#4a1a2e] to-[#1a0f0a]",
-    glows: ["bg-amber-300/15", "bg-pink-500/12", "bg-rose-400/10"],
-    particles: ["#FFD700", "#FF69B4", "#FFB6C1", "#FFA07A", "#DDA0DD", "#FFDAB9"],
-    sparkleEmojis: ["⭐", "✨", "🌟", "🎉", "🌸", "💖"],
+    base: "from-[#0d0520] via-[#1e0a3c] to-[#0d1a2e]",
+    glows: ["bg-violet-500/20", "bg-amber-400/15", "bg-fuchsia-500/12"],
+    particles: ["#FFD700", "#C084FC", "#FB923C", "#34D399", "#F472B6", "#60A5FA"],
+    sparkleEmojis: ["⭐", "✨", "🌟", "🎉", "💖", "🍓", "🥞", "🌈"],
   },
   breakfast: {
     base: "from-[#1a0f0a] via-[#4a2a10] to-[#1a0f0a]",

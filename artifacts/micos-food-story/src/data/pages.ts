@@ -58,7 +58,6 @@ export interface TitlePageData {
   type: "title";
   title: string;
   subtitle: string;
-  flipCards: { emoji: string; backEmoji: string; color: string }[];
   nextPage: string;
 }
 
@@ -123,11 +122,6 @@ export const PAGES: AnyPageData[] = [
     type: "title",
     title: "Mico's Food Story",
     subtitle: "A fun and delicious journey awaits",
-    flipCards: [
-      { emoji: "🥞", backEmoji: "☀️", color: "#4CAF50" },
-      { emoji: "🧺", backEmoji: "🐰", color: "#FF9800" },
-      { emoji: "🎁", backEmoji: "💖", color: "#2196F3" },
-    ],
     nextPage: "season-select",
   },
 
