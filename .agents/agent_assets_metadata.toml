@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ZggcpcPYSX_YktUWsGU-S"
+uri = "file://artifacts/micos-food-story-mobile/assets/images/icon.png"
+type = "image"
+title = "generated_image"
