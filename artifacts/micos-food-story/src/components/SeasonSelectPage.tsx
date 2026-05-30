@@ -2,22 +2,21 @@ import { motion } from "framer-motion";
 import { SeasonSelectPageData } from "@/data/pages";
 import { useStoryStore } from "@/store/storyStore";
 import { useSound } from "@/hooks/useSound";
-import NavButtons from "./NavButtons";
-import { useEffect, useState } from "react";
 
 interface SeasonSelectPageProps {
   page: SeasonSelectPageData;
   onBack: () => void;
 }
 
+const SEASON_DECORATIONS: Record<string, { particles: string[]; glow: string }> = {
+  sunny: { particles: ["☀️", "🌻", "🌈", "✨"], glow: "rgba(251,191,36,0.3)" },
+  winter: { particles: ["❄️", "⛄", "🌨️", "💙"], glow: "rgba(56,189,248,0.3)" },
+  rain:   { particles: ["🌧️", "💧", "🌂", "🐸"], glow: "rgba(148,163,184,0.3)" },
+};
+
 export default function SeasonSelectPage({ page, onBack }: SeasonSelectPageProps) {
   const { setSeason, goToPage } = useStoryStore();
   const { play } = useSound();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleChoice = (optionId: string, targetPage: string) => {
     play("whoosh");
@@ -25,73 +24,124 @@ export default function SeasonSelectPage({ page, onBack }: SeasonSelectPageProps
     goToPage(targetPage);
   };
 
-  if (!mounted) return null;
-
   return (
     <motion.div
-      className="flex flex-col h-[calc(100vh-4rem)] relative"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.05 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="w-full h-full flex flex-col items-center justify-center px-6 py-10 relative overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
     >
-      <div className="flex-1 overflow-y-auto px-6 pt-12 pb-24 scrollbar-hide">
-        <div className="max-w-4xl mx-auto flex flex-col h-full">
-          {/* Question Header */}
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)] tracking-tight">
-              {page.question}
-            </h1>
-          </motion.div>
+      {/* Question header */}
+      <motion.div
+        className="text-center mb-10 z-10"
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <p className="text-amber-300/70 text-xs font-bold uppercase tracking-[0.25em] mb-3">
+          Choose your adventure
+        </p>
+        <h1
+          className="font-bold leading-tight"
+          style={{
+            fontFamily: "'Fredoka', sans-serif",
+            fontSize: "clamp(28px, 4.5vw, 56px)",
+            background: "linear-gradient(135deg, #FDE68A 0%, #FCD34D 50%, #FCA5A5 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            filter: "drop-shadow(0 2px 8px rgba(251,191,36,0.25))",
+          }}
+        >
+          {page.question}
+        </h1>
+      </motion.div>
 
-          {/* Cards Container */}
-          <div className="flex-1 flex flex-col md:flex-row items-stretch justify-center gap-6 md:gap-8 min-h-[300px]">
-            {page.options.map((option, index) => {
-              const isDisabled = false;
-              return (
-                <motion.button
-                  key={option.id}
-                  disabled={isDisabled}
-                  onClick={() => handleChoice(option.id, option.targetPage)}
-                  className={`flex-1 relative group overflow-hidden rounded-[3rem] border-4 border-white/50 shadow-2xl transition-all duration-300 flex flex-col items-center justify-center p-8 backdrop-blur-md
-                    ${isDisabled ? "opacity-50 cursor-not-allowed grayscale" : "hover:border-white/80 hover:-translate-y-2 active:scale-95"}`}
-                  style={{ background: option.bgColor }}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1, type: "spring", stiffness: 100 }}
+      {/* Season cards */}
+      <div className="z-10 w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-5">
+        {page.options.map((option, i) => {
+          const deco = SEASON_DECORATIONS[option.id] ?? SEASON_DECORATIONS.sunny;
+          return (
+            <motion.button
+              key={option.id}
+              onClick={() => handleChoice(option.id, option.targetPage)}
+              className="group relative overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl flex flex-col items-center justify-center p-8 gap-4 cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-white/40"
+              style={{ background: option.bgColor, minHeight: 220 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + i * 0.1, type: "spring", stiffness: 120, damping: 14 }}
+              whileHover={{ y: -6, scale: 1.03, borderColor: "rgba(255,255,255,0.55)" }}
+              whileTap={{ scale: 0.96 }}
+            >
+              {/* Hover shimmer */}
+              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 rounded-3xl" />
+
+              {/* Glow ring on hover */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{ boxShadow: `0 0 40px ${deco.glow}` }}
+              />
+
+              {/* Floating decoration emoji (top-right) */}
+              <span className="absolute top-3 right-4 text-2xl opacity-40 group-hover:opacity-70 transition-opacity select-none">
+                {deco.particles[1]}
+              </span>
+
+              {/* Main emoji */}
+              <motion.span
+                className="text-7xl md:text-8xl filter drop-shadow-xl select-none relative z-10"
+                animate={{ y: [0, -6, 0] }}
+                transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {option.emoji}
+              </motion.span>
+
+              {/* Label */}
+              <div className="relative z-10 flex flex-col items-center gap-1.5">
+                <h2
+                  className="font-bold text-white text-center leading-tight"
+                  style={{
+                    fontFamily: "'Fredoka', sans-serif",
+                    fontSize: "clamp(22px, 3vw, 32px)",
+                    textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                  }}
                 >
-                  {/* Subtle glowing overlay on hover */}
-                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300" />
+                  {option.label}
+                </h2>
+                <p
+                  className="text-white/80 text-center font-medium"
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(13px, 1.4vw, 16px)" }}
+                >
+                  {option.description}
+                </p>
+              </div>
 
-                  {/* Icon */}
-                  <motion.div
-                    className="text-8xl md:text-9xl mb-6 filter drop-shadow-xl"
-                    whileHover={!isDisabled ? { scale: 1.1, rotate: [-5, 5, -5, 0] } : {}}
-                    transition={{ duration: 0.4 }}
-                  >
-                    {option.emoji}
-                  </motion.div>
-
-                  {/* Text */}
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 text-center drop-shadow-md">
-                    {option.label}
-                  </h2>
-                  <p className="text-white/80 font-medium text-center text-lg md:text-xl">
-                    {isDisabled ? "Coming soon..." : option.description}
-                  </p>
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
+              {/* "Pick this!" chip that appears on hover */}
+              <motion.div
+                className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                style={{ fontFamily: "'Fredoka', sans-serif" }}
+              >
+                Pick this! ✨
+              </motion.div>
+            </motion.button>
+          );
+        })}
       </div>
 
-      <NavButtons onBack={onBack} hideContinue />
+      {/* Back button — bottom-left, always visible */}
+      <motion.button
+        className="absolute bottom-6 left-6 z-20 flex items-center gap-2 px-5 py-3 rounded-2xl font-bold text-rose-200 border border-rose-900/50 cursor-pointer hover:bg-rose-950/30 transition-colors"
+        style={{ background: "rgba(74,14,27,0.5)", fontFamily: "'Fredoka', sans-serif", fontSize: 15, backdropFilter: "blur(8px)" }}
+        onClick={() => { play("click"); onBack(); }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.45 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <span>←</span> Back
+      </motion.button>
     </motion.div>
   );
 }

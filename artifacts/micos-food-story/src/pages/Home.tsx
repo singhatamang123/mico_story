@@ -122,10 +122,12 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPageId, narrationEnabled, speak, stop]);
 
-  if (isTitle) {
+  const isSeasonSelect = pageData.type === "season-select";
+
+  if (isTitle || isSeasonSelect) {
     return (
       <main className="w-screen h-screen overflow-hidden relative">
-        <AnimatedBackground theme="title" />
+        <AnimatedBackground theme={isTitle ? "title" : "default"} />
         <div className="absolute top-3 right-4 z-50 flex items-center gap-2">
           <motion.button
             whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }}
@@ -144,10 +146,18 @@ export default function Home() {
             <span className="text-sm">{soundEnabled ? "🔊" : "🔇"}</span>
           </motion.button>
         </div>
-        <TitlePage
-          page={pageData as import("@/data/pages").TitlePageData}
-          onStart={() => { play("whoosh"); goToPage(pageData.nextPage); }}
-        />
+        {isTitle && (
+          <TitlePage
+            page={pageData as import("@/data/pages").TitlePageData}
+            onStart={() => { play("whoosh"); goToPage((pageData as any).nextPage); }}
+          />
+        )}
+        {isSeasonSelect && (
+          <SeasonSelectPage
+            page={pageData as import("@/data/pages").SeasonSelectPageData}
+            onBack={handleBack}
+          />
+        )}
       </main>
     );
   }
@@ -192,21 +202,6 @@ export default function Home() {
       <StorybookLayout isTitle={isTitle}>
         <PageTransition pageId={currentPageId} category={(pageData as any).category}>
           <div className="absolute inset-0 w-full h-full">
-            {pageData.type === "title" && (
-              <TitlePage
-                page={pageData}
-                onStart={() => {
-                  play("whoosh");
-                  goToPage(pageData.nextPage);
-                }}
-              />
-            )}
-            {pageData.type === "season-select" && (
-              <SeasonSelectPage
-                page={pageData}
-                onBack={handleBack}
-              />
-            )}
             {pageData.type === "story" && (
               <StoryPage
                 page={pageData}
