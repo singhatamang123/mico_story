@@ -157,17 +157,37 @@ export default function Home() {
       <AnimatedBackground theme={pageTheme} />
       {pageData.type !== "end" && (
         <div className="absolute top-0 left-0 right-0 z-50">
-          <ProgressBar
-            currentPageId={currentPageId}
-            soundEnabled={soundEnabled}
-            toggleSound={toggleSound}
-            narrationEnabled={narrationEnabled}
-            toggleNarration={toggleNarration}
-            onReset={resetStory}
-            onPlay={play}
-          />
+          <ProgressBar currentPageId={currentPageId} />
         </div>
       )}
+
+      {/* Control buttons — top-right corner, above progress bar */}
+      <div className="absolute top-2 right-3 z-[60] flex items-center gap-1.5">
+        <motion.button
+          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+          onClick={() => { toggleNarration(); play("click"); }}
+          className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-black/60 transition-all select-none"
+          title={narrationEnabled ? "Mute Narration" : "Read Story to Me"}
+        >
+          <span className="text-xs">{narrationEnabled ? "📢" : "🔕"}</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+          onClick={toggleSound}
+          className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-black/60 transition-all select-none"
+          title={soundEnabled ? "Mute Sounds" : "Unmute Sounds"}
+        >
+          <span className="text-xs">{soundEnabled ? "🔊" : "🔇"}</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+          onClick={() => { if (confirm("Start over from the beginning?")) { resetStory(); play("click"); } }}
+          className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md border border-white/20 text-white shadow-lg cursor-pointer hover:bg-black/60 transition-all select-none"
+          title="Start Over"
+        >
+          <span className="text-xs">🏠</span>
+        </motion.button>
+      </div>
 
       <StorybookLayout isTitle={isTitle}>
         <PageTransition pageId={currentPageId} category={(pageData as any).category}>
