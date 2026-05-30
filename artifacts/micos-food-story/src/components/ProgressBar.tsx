@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { PARK_PATH, BEACH_PATH, FOREST_PATH, WINTER_PATH, RAIN_PATH } from "@/data/pages";
 import { useStoryStore } from "@/store/storyStore";
 
@@ -9,25 +9,17 @@ interface ProgressBarProps {
 export default function ProgressBar({ currentPageId }: ProgressBarProps) {
   const { chosenPath, selectedSeason } = useStoryStore();
 
-  // Pick the correct path based on the branch the player is on.
   let activePath = PARK_PATH;
-  if (selectedSeason === "winter") {
-    activePath = WINTER_PATH;
-  } else if (selectedSeason === "rain") {
-    activePath = RAIN_PATH;
-  } else if (chosenPath === "beach") {
-    activePath = BEACH_PATH;
-  } else if (chosenPath === "forest") {
-    activePath = FOREST_PATH;
-  }
+  if (selectedSeason === "winter") activePath = WINTER_PATH;
+  else if (selectedSeason === "rain") activePath = RAIN_PATH;
+  else if (chosenPath === "beach") activePath = BEACH_PATH;
+  else if (chosenPath === "forest") activePath = FOREST_PATH;
 
   const totalPages = activePath.length;
   const currentIndex = activePath.indexOf(currentPageId);
-  // If page isn't in the active path yet (e.g. title), fall back to 0
   const safeIndex = currentIndex < 0 ? 0 : currentIndex;
   const progress = (safeIndex / (totalPages - 1)) * 100;
 
-  // Chapter dots — labels adapt to the chosen path
   let chapters: { pageId: string; label: string; index: number; emoji: string }[] = [];
 
   if (selectedSeason === "winter") {
@@ -47,106 +39,129 @@ export default function ProgressBar({ currentPageId }: ProgressBarProps) {
       { pageId: "rain-end", label: "End", index: activePath.indexOf("rain-end"), emoji: "🏆" },
     ];
   } else {
-    // Sunny Season defaults
     const isBeach = chosenPath === "beach";
     const isForest = chosenPath === "forest";
-    const midChapterPageId = isBeach ? "beach" : isForest ? "forest" : "meadow";
-    const midChapterLabel = isBeach ? "Beach" : isForest ? "Forest" : "Picnic";
-    const midChapterEmoji = isBeach ? "🏖️" : isForest ? "🌲" : "🧺";
-    const midChapterIndex = activePath.indexOf(midChapterPageId);
-
+    const midId = isBeach ? "beach" : isForest ? "forest" : "meadow";
+    const midLabel = isBeach ? "Beach" : isForest ? "Forest" : "Picnic";
+    const midEmoji = isBeach ? "🏖️" : isForest ? "🌲" : "🧺";
     chapters = [
-      { pageId: "title", label: "Start", index: activePath.indexOf("title"), emoji: "🎬" },
-      { pageId: "morning", label: "Breakfast", index: activePath.indexOf("morning"), emoji: "🥞" },
-      { pageId: midChapterPageId, label: midChapterLabel, index: midChapterIndex, emoji: midChapterEmoji },
-      { pageId: "giftshop", label: "Gift", index: activePath.indexOf("giftshop"), emoji: "🎁" },
-      { pageId: "end", label: "End", index: activePath.indexOf("end"), emoji: "🏆" },
+      { pageId: "title",    label: "Start",     index: activePath.indexOf("title"),    emoji: "🎬" },
+      { pageId: "morning",  label: "Breakfast", index: activePath.indexOf("morning"),  emoji: "🥞" },
+      { pageId: midId,      label: midLabel,    index: activePath.indexOf(midId),      emoji: midEmoji },
+      { pageId: "giftshop", label: "Gift",      index: activePath.indexOf("giftshop"), emoji: "🎁" },
+      { pageId: "end",      label: "End",       index: activePath.indexOf("end"),      emoji: "🏆" },
     ];
   }
 
-  // Find the active chapter label based on currentIndex
   let activeChapterLabel = chapters[0].label;
   for (let i = chapters.length - 1; i >= 0; i--) {
-    if (safeIndex >= chapters[i].index) {
-      activeChapterLabel = chapters[i].label;
-      break;
-    }
+    if (safeIndex >= chapters[i].index) { activeChapterLabel = chapters[i].label; break; }
   }
 
   return (
-    <div
-      className="w-full px-8 py-3 bg-white/5 backdrop-blur-md border-b border-white/10"
+    <motion.div
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="w-full px-6 py-2.5"
+      style={{
+        background: "linear-gradient(to bottom, rgba(10,5,3,0.82) 0%, rgba(10,5,3,0.0) 100%)",
+        backdropFilter: "blur(8px)",
+      }}
       role="progressbar"
       aria-valuenow={Math.round(progress)}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-label={`Story progress: ${Math.round(progress)}%`}
     >
-      <div className="max-w-4xl mx-auto flex flex-col gap-2">
-        <div className="flex justify-between items-center text-xs font-semibold tracking-wider text-pink-200/80 uppercase px-1">
-          <span>Mico's Journey</span>
-          <span className="bg-pink-500/20 px-2 py-0.5 rounded-full text-pink-300 border border-pink-500/20">
-            {activeChapterLabel}
+      <div className="max-w-3xl mx-auto flex items-center gap-4">
+
+        {/* Label pill */}
+        <div className="flex-shrink-0 flex items-center gap-1.5">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-amber-300/70 whitespace-nowrap hidden sm:block">
+            Mico's Journey
           </span>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={activeChapterLabel}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 whitespace-nowrap"
+            >
+              {activeChapterLabel}
+            </motion.span>
+          </AnimatePresence>
         </div>
 
-        <div className="relative h-3 rounded-full mt-1 bg-white/10 border border-white/5 shadow-inner">
-          {/* Progress fill */}
+        {/* Bar track */}
+        <div className="relative flex-1 h-2.5 rounded-full bg-white/10 border border-white/10 shadow-inner overflow-visible">
+
+          {/* Glow fill */}
           <motion.div
-            className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-pink-400 via-rose-400 to-amber-300 shadow-[0_0_12px_rgba(244,63,94,0.4)]"
+            className="absolute top-0 left-0 h-full rounded-full"
+            style={{
+              background: "linear-gradient(90deg, #F59E0B 0%, #EC4899 50%, #8B5CF6 100%)",
+              boxShadow: "0 0 10px rgba(245,158,11,0.5), 0 0 20px rgba(236,72,153,0.3)",
+            }}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           />
 
-          {/* Chapter dots */}
+          {/* Chapter milestone dots */}
           {chapters.map((ch) => {
-            const dotProgress = (ch.index / (totalPages - 1)) * 100;
+            const dotPct = (ch.index / (totalPages - 1)) * 100;
             const isReached = safeIndex >= ch.index;
-            // Determine if we're currently "within" a chapter's pages
-            const nextChapterIndex = chapters[chapters.indexOf(ch) + 1]?.index ?? totalPages;
-            const isActive = safeIndex >= ch.index && safeIndex < nextChapterIndex;
-            const isCurrentSpecific = currentPageId === ch.pageId;
+            const nextIdx = chapters[chapters.indexOf(ch) + 1]?.index ?? totalPages;
+            const isActive = safeIndex >= ch.index && safeIndex < nextIdx;
 
             return (
               <div
                 key={ch.pageId}
                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 group"
-                style={{ left: `${dotProgress}%` }}
+                style={{ left: `${dotPct}%` }}
               >
-                {/* Dot Element */}
-                <motion.button
-                  disabled
-                  className="w-7 h-7 rounded-full flex items-center justify-center border-2 shadow-lg transition-all duration-300"
+                <motion.div
+                  className="flex items-center justify-center rounded-full border-2 shadow-lg"
                   style={{
+                    width: isActive ? 30 : 24,
+                    height: isActive ? 30 : 24,
                     background: isReached
-                      ? "linear-gradient(135deg, #FFF0F6 0%, #FFE3E3 100%)"
-                      : "#3D1A25",
+                      ? "linear-gradient(135deg, #FDE68A, #F59E0B)"
+                      : "rgba(30,15,10,0.85)",
                     borderColor: isActive
-                      ? "#F5C842"
+                      ? "#FDE68A"
                       : isReached
-                      ? "#FFA5B8"
+                      ? "rgba(245,158,11,0.6)"
                       : "rgba(255,255,255,0.15)",
-                    boxShadow: isActive ? "0 0 15px #F5C842" : "0 4px 6px rgba(0,0,0,0.1)",
+                    boxShadow: isActive
+                      ? "0 0 0 3px rgba(253,230,138,0.3), 0 0 14px rgba(245,158,11,0.5)"
+                      : isReached
+                      ? "0 0 8px rgba(245,158,11,0.3)"
+                      : "none",
                   }}
-                  animate={{
-                    scale: isCurrentSpecific ? 1.25 : isActive ? 1.15 : 1,
-                  }}
+                  animate={{ scale: isActive ? 1.15 : 1 }}
                   transition={{ type: "spring", damping: 10 }}
                   title={ch.label}
                 >
-                  <span className="text-[13px] select-none leading-none">{ch.emoji}</span>
-                </motion.button>
+                  <span className="text-[11px] select-none leading-none">{ch.emoji}</span>
+                </motion.div>
 
-                {/* Bubble label */}
-                <div className="absolute top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none bg-pink-950/90 text-white text-[10px] font-bold px-2 py-1 rounded border border-pink-800 shadow-md whitespace-nowrap z-30">
+                {/* Tooltip */}
+                <div className="absolute top-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none bg-black/85 text-white text-[10px] font-bold px-2 py-1 rounded border border-white/10 shadow-lg whitespace-nowrap z-30">
                   {ch.label}
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Percent badge */}
+        <div className="flex-shrink-0 text-[11px] font-bold text-white/50 tabular-nums w-8 text-right hidden sm:block">
+          {Math.round(progress)}%
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

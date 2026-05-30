@@ -201,18 +201,15 @@ export default function Home() {
         )}
       </div>
 
-      <StorybookLayout isTitle={isTitle}>
-        {!isTitle && pageData.type !== "end" && (
-          <div className="absolute top-0 left-0 right-0 z-50">
-            <ProgressBar currentPageId={currentPageId} />
-          </div>
-        )}
+      {pageData.type !== "end" && (
+        <div className="absolute top-0 left-0 right-0 z-50">
+          <ProgressBar currentPageId={currentPageId} />
+        </div>
+      )}
 
+      <StorybookLayout isTitle={isTitle}>
         <PageTransition pageId={currentPageId} category={(pageData as any).category}>
-          <div
-            className="absolute inset-0 w-full h-full"
-            style={{ paddingTop: !isTitle && pageData.type !== "end" ? 50 : 0 }}
-          >
+          <div className="absolute inset-0 w-full h-full">
             {pageData.type === "title" && (
               <TitlePage
                 page={pageData}

@@ -8,7 +8,7 @@ interface StorybookLayoutProps {
 
 export default function StorybookLayout({ children, isTitle }: StorybookLayoutProps) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center p-4 md:p-12 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 flex items-center justify-center pt-14 pb-4 px-4 md:pt-16 md:pb-12 md:px-12 overflow-hidden pointer-events-none">
       {/* 
         The book container. 
         If it's the title page, it looks like a closed book. 
