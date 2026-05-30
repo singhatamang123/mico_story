@@ -1,36 +1,41 @@
-# [Project name]
+# Mico's Food Story
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+An interactive children's storybook adventure where kids guide Mico through seasonal food stories, make choices, and complete activities.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/micos-food-story run dev` — run the frontend (Vite dev server)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: Vite + React 19, Tailwind CSS v4, Framer Motion
+- State: Zustand (persisted to localStorage)
+- Fonts: Fredoka, Outfit (Google Fonts)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/micos-food-story/` — the main Vite + React app
+- `artifacts/micos-food-story/src/pages/Home.tsx` — main page / app shell
+- `artifacts/micos-food-story/src/components/` — all story page components
+- `artifacts/micos-food-story/src/data/pages.ts` — all story content / page graph
+- `artifacts/micos-food-story/src/store/storyStore.ts` — Zustand state (navigation, choices, sound)
+- `artifacts/micos-food-story/src/hooks/` — useSound (Web Audio API) and useSpeech (TTS)
+- `artifacts/micos-food-story/public/images/` — character and food images
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Single-page app: all story navigation is state-driven (no URL routing needed) via `currentPageId` in Zustand
+- Story graph is a flat array in `data/pages.ts` with linked `nextPage`/`prevPage` IDs — no index arithmetic
+- Sound effects generated programmatically via Web Audio API (no audio files needed)
+- Story progress persisted to localStorage via Zustand persist middleware
+- No backend needed — fully client-side
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Children's interactive storybook with three seasonal campaigns (Sunny, Winter, Rain). Kids choose Mico's breakfast, explore branching paths (Park/Beach/Forest or snowman/puddles), collect items via tap activities, and get a personalised story ending. Narration toggle reads the story aloud via Web Speech API.
 
 ## User preferences
 
@@ -38,7 +43,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `"use client"` directives from the original Next.js source are harmless no-ops in Vite (ignored) but were stripped during migration
+- The story content in `data/pages.ts` is large (~900 lines) — be careful when editing page IDs as the graph links are by string ID
 
 ## Pointers
 
